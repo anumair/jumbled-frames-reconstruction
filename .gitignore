@@ -44,6 +44,7 @@ input/*.mp4
 output/*.mp4
 *.log
 *.tmp
+frames/
 
 # Jupyter Notebook
 .ipynb_checkpoints
