@@ -1,0 +1,9 @@
+ResNet50 Approach Execution Log
+========================================
+Execution Time: 31.29 seconds
+Total Frames: 300
+Initial Similarity: 297.1971
+Final Similarity: 291.5081
+Improvement: -5.6890
+Output Video: output/reconstructed_resnet50.mp4
+Frame Order File: frame_order_resnet50.txt
