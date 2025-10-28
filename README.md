@@ -42,7 +42,6 @@ jumbled-frames-reconstruction/
 - (Additional dependencies will be listed in requirements.txt)
 
 ## Author
-Tecdia Project Team
+Ansari Mohammed Umair
 
-## License
-MIT License
+
