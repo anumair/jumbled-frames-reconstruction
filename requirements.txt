@@ -7,9 +7,10 @@ tqdm>=4.65.0
 scikit-image>=0.21.0
 scipy>=1.11.0
 
-# Optional: For machine learning approaches (ResNet50)
+# Optional: For machine learning approaches (ResNet50 + YOLOv11)
 torch>=2.0.0
 torchvision>=0.15.0
+ultralytics>=8.3.0  # YOLOv11 (latest)
 # tensorflow>=2.13.0
 
 # Utilities
