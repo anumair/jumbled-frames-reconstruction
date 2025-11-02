@@ -57,11 +57,22 @@ def main():
     total_start = time.time()
     results = []
     
+    # ========== V0: Frame Extraction ==========
+    print("\n\n📁 STAGE 1: V0 - Frame Extraction from Video")
+    print("-" * 70)
+
+    v1_dir = os.path.join(script_dir, "v1")
+    success, elapsed = run_script(os.path.join(v1_dir, "0_extract_frames.py"), "V0: Extracting video frames")
+    results.append(("V0: Extracting video frames", success, elapsed))
+
+    if not success:
+        print(f"\n❌ Pipeline failed at: V0 Frame Extraction")
+        return
+
     # ========== V1: ResNet50 + Refinement ==========
-    print("\n\n📁 STAGE 1: V1 - ResNet50 Feature Extraction & Refinement")
+    print("\n\n📁 STAGE 2: V1 - ResNet50 Feature Extraction & Refinement")
     print("-" * 70)
     
-    v1_dir = os.path.join(script_dir, "v1")
     v1_scripts = [
         ("1_extract_resnet_features.py", "V1: Extract ResNet50 features"),
         ("2_compute_similarity.py", "V1: Compute similarity matrix"),
@@ -79,7 +90,7 @@ def main():
             return
     
     # ========== V2: Optical Flow ==========
-    print("\n\n📁 STAGE 2: V2 - Optical Flow Refinement")
+    print("\n\n📁 STAGE 3: V2 - Optical Flow Refinement")
     print("-" * 70)
     
     v2_dir = os.path.join(script_dir, "v2")
@@ -92,7 +103,7 @@ def main():
         return
     
     # ========== V3: Final Video ==========
-    print("\n\n📁 STAGE 3: V3 - Final Video Reconstruction")
+    print("\n\n📁 STAGE 4: V3 - Final Video Reconstruction")
     print("-" * 70)
     
     v3_dir = os.path.join(script_dir, "v3")
