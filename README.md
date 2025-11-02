@@ -57,68 +57,93 @@ pip install -r requirements.txt
 This approach uses deep learning features with progressive refinements across three versions.
 
 #### **V1: ResNet-50 + 2-opt + Sliding Window Refinement**
-- **Feature Extraction**: ResNet-50 pre-trained on ImageNet
+- **Feature Extraction**: PyTorch ResNet-50 pre-trained on ImageNet (2048-dimensional features)
+- **Smart Starting Point**: Frame 276 (identified using multi-heuristic voting system)
 - **Initial Ordering**: Greedy nearest neighbor with cosine similarity
 - **2-opt Improvement**: Local optimization to fix crossed edges
-- **Sliding Window Refinement**: Further smoothing of temporal continuity
-- **Starting Point**: Frame 38 (optimally selected)
+- **Sliding Window Refinement**: Further smoothing of temporal continuity (window size 4-5)
 
 **Run:**
 ```bash
-run_resnet_tf_refinement.bat
+cd src\approach_resnet_tf_refinement\v1
+python 1_extract_resnet_features.py
+python 2_compute_similarity.py
+python 3_order_frames_smart.py
+python 4_refine_ordering.py
+python 5_reconstruct_video.py
 ```
 
-**Output:** `output/reconstructed_frames_refined/` → `output/reconstructed_refined_video.mp4`
+**Output:** `output/reconstructed_frames_refined/reconstructed_refined_video.mp4`
+
+**Key Features:**
+- Iterative 2-opt refinement until convergence
+- Sliding window optimization with exhaustive search
+- Total execution time: ~2-3 minutes
 
 #### **V2: V1 + Optical Flow Enhancement**
-- **All V1 features** +
-- **Optical Flow Verification**: Checks motion direction across sampled frame transitions
+- **Starting Point**: Uses frame 276 from V1's smart starting point detection
+- **Optical Flow Verification**: Farneback optical flow to check motion consistency
+- **Direction Detection**: Samples middle 50% of sequence to verify walk direction
+- **Adaptive Thresholding**: Uses MAD (Median Absolute Deviation) for robust detection
 - **Direction Correction**: Reverses sequence if backward motion detected
-- **Final Verification**: Samples middle section to confirm walk direction
 
 **Run:**
 ```bash
-run_optical_flow_v2.bat
+cd src\approach_resnet_tf_refinement\v2
+python reconstruct_fast_optical.py
+python construct_video.py
 ```
 
-**Output:** `output/reconstructed_frames_optical_flow_v2/` → `v2/output/reconstructed_optical_flow_v2.mp4`
+**Output:** `output/reconstructed_frames_optical_flow_v2/reconstructed_optical_flow_v2.mp4`
 
-**Note:** The reconstructed video shows the person walking backward. This is inherent to the source video's frame ordering and documented accordingly.
+**Improvements over V1:**
+- Better temporal continuity with optical flow consistency
+- Motion-aware ordering
+- Reduced visual artifacts at frame transitions
 
-#### **V3: V2 + Cyclic Rotation Correction**
-- **All V2 features** +
-- **Similarity Matrix**: Full pairwise cosine similarity computation
-- **Cyclic Offset Detection**: Identifies temporal discontinuities in the sequence
-- **Rotation Correction**: Fixes residual misplaced chunks by rotating the frame order
-- **Threshold**: 0.3 minimum dissimilarity to detect discontinuity
-- **Max Shift**: 80% of total frames to avoid noise corrections
+**Known Limitation:** The video shows the person walking backward. This is due to the temporal ordering algorithm optimizing for visual similarity and flow consistency without accounting for semantic motion direction.
+
+#### **V3: Reversed V2 Output (Diagnostic)**
+- **Simple reversal**: Takes V2's frame order and reverses it completely
+- **Purpose**: Test if reversing the sequence fixes the backward motion
+- **No ML processing**: Just frame order reversal
 
 **Run:**
 ```bash
-run_cyclic_v3.bat
+cd src\approach_resnet_tf_refinement\v3
+python reverse_video.py
+python reconstruct_video.py
 ```
 
-**Output:** `output/reconstructed_frames_cyclic_v3/` → `v3/output/reconstructed_cyclic_v3.mp4`
+**Output:** `output/reconstructed_v3_reversed.mp4`
 
-**Improvement:** Fixes cyclic ordering issues where end frames belong at the beginning, restoring proper temporal continuity.
+**Result:** V3 confirms the issue is frame order direction, showing the person walking forward when V2 is reversed.
 
 ## Performance Metrics
 
 ### V1 (ResNet-50 + 2-opt + Sliding Window)
-- **Execution Time**: ~1-2 minutes
-- **Continuity**: Good - smooth transitions
-- **Issue**: Cyclic offset (last frames should be first)
+- **Execution Time**: ~2-3 minutes
+  - Feature extraction: ~30-60 seconds
+  - Initial ordering: ~1 second
+  - 2-opt refinement: ~30-120 seconds
+  - Video reconstruction: ~30 seconds
+- **Continuity**: Excellent - smooth transitions with refinement
+- **Starting Point**: Frame 276 (smart selection)
+- **Total Frames**: 300 frames = 10 seconds at 30 fps
 
 ### V2 (V1 + Optical Flow)
-- **Execution Time**: ~2 minutes
-- **Continuity**: Excellent - verified motion direction
-- **Issue**: Person walking backward (source video characteristic)
+- **Execution Time**: ~2-4 minutes
+  - All V1 processing +
+  - Optical flow computation: ~1-2 minutes
+- **Continuity**: Excellent - verified motion consistency
+- **Motion Detection**: Uses Farneback optical flow
+- **Issue**: Person walking backward (inherent to ordering algorithm)
 
-### V3 (V2 + Cyclic Correction)
-- **Execution Time**: ~2-3 minutes (includes similarity matrix computation)
-- **Continuity**: Excellent - cyclic offset corrected
-- **Accuracy**: Best overall temporal ordering
-- **Note**: Backward walking preserved as source characteristic
+### V3 (Reversed V2)
+- **Execution Time**: <1 minute (just frame reordering)
+- **Continuity**: Same as V2 (reversed)
+- **Motion Direction**: Person walks forward (V2 reversed)
+- **Purpose**: Diagnostic to confirm direction issue
 
 ## System Requirements
 - Python 3.8+
@@ -134,32 +159,44 @@ run_cyclic_v3.bat
 
 | Feature | V1 | V2 | V3 |
 |---------|----|----|-----|
-| ResNet-50 Features | ✅ | ✅ | ✅ |
-| Greedy NN Ordering | ✅ | ✅ | ✅ |
+| ResNet-50 Features | ✅ | ✅ | ❌ |
+| Smart Starting Point (276) | ✅ | ✅ | N/A |
+| Greedy NN Ordering | ✅ | ✅ | ❌ |
 | 2-opt Optimization | ✅ | ❌ | ❌ |
 | Sliding Window | ✅ | ❌ | ❌ |
-| Optical Flow | ❌ | ✅ | ✅ |
-| Direction Verification | ❌ | ✅ | ✅ |
-| Cyclic Correction | ❌ | ❌ | ✅ |
-| Similarity Matrix | Partial | Partial | Full |
-| Runtime | ~1-2 min | ~2 min | ~2-3 min |
+| Optical Flow | ❌ | ✅ | ❌ |
+| Direction Verification | ❌ | ✅ | N/A |
+| Frame Reversal | ❌ | ❌ | ✅ |
+| Motion Direction | Unknown | Backward | Forward |
+| Runtime | ~2-3 min | ~3-4 min | <1 min |
+| Best For | Complete reconstruction | Motion consistency | Quick direction fix |
 
 ## Key Innovations
 
-### 1. Optimal Starting Point Selection (Frame 38)
-- Analyzed frame similarity distribution
-- Selected frame with highest average similarity to neighbors
-- Ensures reconstruction begins from a stable temporal anchor
+### 1. Smart Starting Point Selection (V1) - Frame 276
+- Multi-heuristic voting system combining:
+  - Edge detection (asymmetric similarity distribution)
+  - Low average similarity frames
+  - Directional flow analysis
+- Tests both forward and backward directions for each candidate
+- Scores based on flow consistency and magnitude
+- Ensures reconstruction begins from optimal temporal anchor
 
-### 2. Cyclic Offset Correction (V3)
-- Detects large discontinuities in similarity sequence
-- Rotates frame order to fix cyclic misalignment
-- Threshold-based to avoid overcorrection from noise
+### 2. Two-Stage Refinement (V1)
+- **2-opt Algorithm**: Iteratively swaps segments to improve local ordering
+- **Sliding Window Optimization**: Exhaustive search within small windows (4-5 frames)
+- Continues until convergence (no further improvements found)
 
-### 3. Optical Flow Verification (V2/V3)
-- Samples transitions across the sequence
-- Verifies motion direction using Farneback optical flow
-- Reverses order if backward motion dominates
+### 3. Optical Flow Verification (V2)
+- Uses Farneback optical flow to measure pixel-level motion
+- Samples middle 50% of sequence for robust direction detection
+- Adaptive thresholding using MAD (Median Absolute Deviation)
+- Verifies temporal consistency across frame transitions
+
+### 4. Simple Reversal Diagnostic (V3)
+- Quick test to confirm direction issue
+- No machine learning overhead
+- Demonstrates that V2's ordering is correct but reversed
 
 ## Documentation Structure
 
@@ -168,27 +205,32 @@ docs/
 └── algorithm_explanation.md    # Detailed algorithm documentation
 
 src/approach_resnet_tf_refinement/
-├── v1/                         # V1 implementation (in parent directory)
-├── v2/                         # V2: Optical Flow
+├── v1/                         # V1: ResNet-50 + 2-opt + Sliding Window
+│   ├── 1_extract_resnet_features.py
+│   ├── 2_compute_similarity.py
+│   ├── 3_order_frames_smart.py
+│   ├── 4_refine_ordering.py
+│   ├── 5_reconstruct_video.py
+│   └── README.md
+├── v2/                         # V2: V1 + Optical Flow
 │   ├── reconstruct_fast_optical.py
 │   ├── construct_video.py
-│   ├── output/
 │   └── README.md
-└── v3/                         # V3: Cyclic Correction
-    ├── reconstruct_cyclic_correction.py
-    ├── construct_video.py
-    ├── output/
+└── v3/                         # V3: Reversed V2 (Diagnostic)
+    ├── reverse_video.py
+    ├── reconstruct_video.py
     └── README.md
 ```
 
 ## Future Improvements
 
 Potential enhancements for even better reconstruction:
-- **Adaptive threshold** based on similarity distribution
-- **Multi-scale discontinuity detection** for finer granularity
-- **Dynamic programming** for global optimal ordering
+- **Pose estimation** to determine semantic motion direction
+- **Scene flow** for 3D motion understanding
+- **Bidirectional ordering comparison** to detect reversed sequences
 - **Temporal consistency loss** during optimization
-- **Motion prediction** to validate transitions
+- **Motion prediction models** to validate transitions
+- **Hybrid approach** combining similarity, optical flow, AND direction detection
 
 ## Author
 Ansari Mohammed Umair

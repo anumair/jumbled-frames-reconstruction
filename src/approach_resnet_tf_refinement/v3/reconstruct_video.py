@@ -65,8 +65,8 @@ def main():
     # V3 reversed frames directory
     frames_dir = os.path.join(project_root, "output", "reconstructed_frames_v3_reversed")
     
-    # Output video path
-    output_video = os.path.join(project_root, "output", "reconstructed_v3_reversed.mp4")
+    # Output video path - Final unjumbled video
+    output_video = os.path.join(project_root, "output", "unjumbled_video.mp4")
     
     # Create video
     reconstruct_video_from_frames(frames_dir, output_video, fps=30)

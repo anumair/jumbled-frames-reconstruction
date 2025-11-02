@@ -1,14 +1,14 @@
-# V3: Reversed V2 Output
+# V3: Reversed V2 Output - Final Unjumbled Video
 
 ## Overview
-V3 is a simple experiment that reverses the frame order from V2's output to test if the video plays better in reverse.
+V3 is the final solution that reverses the frame order from V2's output to correct the backward motion, producing the properly unjumbled video.
 
 ## What V3 Does
 
 1. **Loads V2's frame order** from `optical_refined_frames.txt`
 2. **Reverses the entire sequence** (first frame becomes last, last becomes first)
 3. **Saves frames in reversed order** to `reconstructed_frames_v3_reversed/`
-4. **Creates reversed video** as `reconstructed_v3_reversed.mp4`
+4. **Creates final unjumbled video** as `unjumbled_video.mp4`
 
 ## Key Details
 
@@ -19,19 +19,19 @@ V3 is a simple experiment that reverses the frame order from V2's output to test
 
 ## Purpose
 
-Since V2's video showed the person walking backward, V3 tests if simply reversing the frame order makes the person walk forward correctly.
+Since V2's video showed the person walking backward, V3 reverses the frame order to make the person walk forward correctly, producing the final unjumbled video.
 
 ## Files
 
 - `reverse_video.py` - Reverses V2's frame order
-- `reconstruct_video.py` - Creates video from reversed frames
-- Output: `output/reconstructed_v3_reversed.mp4`
+- `reconstruct_video.py` - Creates final video from reversed frames
+- **Output**: `output/unjumbled_video.mp4` ← **FINAL VIDEO**
 
 ## Comparison
 
 - **V2**: Person walks backward (frame order: 276 → ... → 48)
-- **V3**: Person walks forward? (frame order: 48 → ... → 276)
+- **V3**: Person walks forward (frame order: 48 → ... → 276)
 
-## Note
+## Result
 
-This is a diagnostic approach to verify if the issue in V2 was simply the frame order direction, not the ordering logic itself.
+✅ **V3 successfully produces the final unjumbled video with correct forward motion!**

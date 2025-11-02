@@ -1,0 +1,99 @@
+================================================================================
+EXECUTION TIME LOG - Frame Reconstruction Pipeline
+Generated: 2025-11-02 20:47:58
+================================================================================
+
+
+V1 - Step 1: Extract Features
+--------------------------------------------------------------------------------
+Description: Extract ResNet50 features from frames
+Start Time: 2025-11-02 20:47:58
+End Time: 2025-11-02 20:49:30
+Duration: 00:01:31.854
+Status: ✅ Success
+
+
+V1 - Step 2: Compute Similarity
+--------------------------------------------------------------------------------
+Description: Compute similarity matrix from features
+Start Time: 2025-11-02 20:49:30
+End Time: 2025-11-02 20:49:36
+Duration: 00:00:05.971
+Status: ✅ Success
+
+
+V1 - Step 3: Smart Starting Point
+--------------------------------------------------------------------------------
+Description: Find optimal starting frame using smart detection
+Start Time: 2025-11-02 20:49:36
+End Time: 2025-11-02 20:49:37
+Duration: 00:00:00.559
+Status: ✅ Success
+
+
+V1 - Step 4: 2-opt Refinement
+--------------------------------------------------------------------------------
+Description: Apply 2-opt local search optimization
+Start Time: 2025-11-02 20:49:37
+End Time: 2025-11-02 20:49:37
+Duration: 00:00:00.100
+Status: ✅ Success
+
+
+V1 - Step 5: Sliding Window
+--------------------------------------------------------------------------------
+Description: Apply sliding window refinement
+Start Time: 2025-11-02 20:49:37
+End Time: 2025-11-02 20:49:37
+Duration: 00:00:00.101
+Status: ✅ Success
+
+
+V1 - Step 6: Reconstruct Video
+--------------------------------------------------------------------------------
+Description: Create final reconstructed video
+Start Time: 2025-11-02 20:49:37
+End Time: 2025-11-02 20:49:37
+Duration: 00:00:00.094
+Status: ✅ Success
+
+
+V2 - Optical Flow Reconstruction
+--------------------------------------------------------------------------------
+Description: Apply optical flow refinement on V1 output
+Start Time: 2025-11-02 20:49:37
+End Time: 2025-11-02 20:51:53
+Duration: 00:02:16.044
+Status: ✅ Success
+
+
+V2 - Construct Video
+--------------------------------------------------------------------------------
+Description: Create V2 video from refined frames
+Start Time: 2025-11-02 20:51:53
+End Time: 2025-11-02 20:52:24
+Duration: 00:00:31.107
+Status: ✅ Success
+
+
+V3 - Reverse Frame Order
+--------------------------------------------------------------------------------
+Description: Reverse V2 frame order
+Start Time: 2025-11-02 20:52:24
+End Time: 2025-11-02 20:52:52
+Duration: 00:00:27.446
+Status: ✅ Success
+
+
+V3 - Reconstruct Video
+--------------------------------------------------------------------------------
+Description: Create V3 video from reversed frames
+Start Time: 2025-11-02 20:52:52
+End Time: 2025-11-02 20:53:32
+Duration: 00:00:40.790
+Status: ✅ Success
+
+================================================================================
+EXECUTION COMPLETED
+Total Script End Time: 2025-11-02 20:53:32
+================================================================================

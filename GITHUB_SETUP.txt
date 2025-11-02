@@ -1,8 +1,0 @@
-# Commands to link local repository to GitHub
-# Run these AFTER creating the GitHub repository
-
-# Add remote origin (replace 'anumair' with your GitHub username if different)
-git remote add origin https://github.com/anumair/jumbled-frames-reconstruction.git
-
-# Push to GitHub
-git push -u origin main
