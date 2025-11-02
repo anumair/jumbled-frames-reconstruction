@@ -15,7 +15,6 @@ jumbled-frames-reconstruction/
 ├── input/                  # Input jumbled video
 ├── output/                 # Reconstructed video output
 ├── docs/                   # Algorithm explanation and documentation
-├── tests/                  # Test files and utilities
 ├── README.md              # This file
 ├── requirements.txt       # Python dependencies
 └── .gitignore            # Git ignore file
@@ -49,6 +48,31 @@ source venv/bin/activate
 ```bash
 pip install -r requirements.txt
 ```
+
+## Quick Start - Run Complete Pipeline
+
+**Recommended:** Run the entire pipeline (V1 → V2 → V3) with a single command:
+
+```bash
+# Activate virtual environment
+venv\Scripts\activate
+
+# Run complete pipeline
+cd src\approach_resnet_tf_refinement
+python pipeline.py
+```
+
+This will automatically:
+1. Extract ResNet-50 features (V1)
+2. Compute similarity matrix (V1)
+3. Find smart starting point and order frames (V1)
+4. Apply 2-opt + sliding window refinement (V1)
+5. Enhance with optical flow (V2)
+6. Create final unjumbled video (V3)
+
+**Output:** `output/unjumbled_video.mp4` (the final reconstructed video)
+
+---
 
 ## Implemented Approaches
 

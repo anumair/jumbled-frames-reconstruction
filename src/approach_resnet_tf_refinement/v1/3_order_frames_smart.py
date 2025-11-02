@@ -263,9 +263,13 @@ def save_frame_order(frame_order, output_file):
 
 
 if __name__ == "__main__":
-    similarity_file = "similarity_matrix.npy"
-    output_file = "frame_order_initial.txt"
-    frames_dir = "../../../frames"  # Directory containing frame images
+    # Get absolute paths
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+    
+    similarity_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "similarity_matrix.npy")
+    output_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "frame_order_initial.txt")
+    frames_dir = os.path.join(project_root, "frames")
     
     print("Loading similarity matrix...")
     similarity_matrix = np.load(similarity_file)

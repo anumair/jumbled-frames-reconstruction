@@ -67,7 +67,11 @@ def extract_resnet_features_pytorch(frames_dir, output_file):
     print(f"Feature shape: {features.shape}")
 
 if __name__ == "__main__":
-    frames_dir = "frames"
-    output_file = "src/approach_resnet_tf_refinement/resnet_features.npy"
+    # Get absolute paths
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+    
+    frames_dir = os.path.join(project_root, "frames")
+    output_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "resnet_features.npy")
     
     extract_resnet_features_pytorch(frames_dir, output_file)

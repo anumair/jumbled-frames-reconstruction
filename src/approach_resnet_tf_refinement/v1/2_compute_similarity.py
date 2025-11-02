@@ -1,4 +1,5 @@
 import numpy as np
+import os
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
@@ -27,7 +28,11 @@ def compute_similarity_matrix(features_file, output_file):
     return similarity_matrix
 
 if __name__ == "__main__":
-    features_file = "src/approach_resnet_tf_refinement/resnet_features.npy"
-    output_file = "src/approach_resnet_tf_refinement/similarity_matrix.npy"
+    # Get absolute paths
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+    
+    features_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "resnet_features.npy")
+    output_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "similarity_matrix.npy")
     
     compute_similarity_matrix(features_file, output_file)

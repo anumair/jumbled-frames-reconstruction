@@ -126,10 +126,15 @@ def save_frame_order(frame_order, output_file):
     print(f"✅ Refined frame order saved to '{output_file}'")
 
 if __name__ == "__main__":
+    # Get absolute paths
+    import os
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
+    
     # Load initial frame order
-    initial_order_file = "frame_order_initial.txt"
-    similarity_file = "similarity_matrix.npy"
-    output_file = "frame_order_refined.txt"
+    initial_order_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "frame_order_initial.txt")
+    similarity_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "similarity_matrix.npy")
+    output_file = os.path.join(project_root, "src", "approach_resnet_tf_refinement", "frame_order_refined.txt")
     
     print("Loading initial frame order...")
     with open(initial_order_file, 'r') as f:

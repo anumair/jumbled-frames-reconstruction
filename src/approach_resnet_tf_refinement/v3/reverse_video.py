@@ -16,7 +16,8 @@ def reverse_v2_output():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
     
-    v2_output_dir = os.path.join(project_root, "output", "reconstructed_frames_optical_flow_v2")
+    # Look for V2 output in the correct directory (v2_fixed_direction)
+    v2_output_dir = os.path.join(project_root, "output", "reconstructed_frames_v2_fixed_direction")
     v2_order_file = os.path.join(v2_output_dir, "optical_refined_frames.txt")
     v3_output_dir = os.path.join(project_root, "output", "reconstructed_frames_v3_reversed")
     original_frames_dir = os.path.join(project_root, "frames")
