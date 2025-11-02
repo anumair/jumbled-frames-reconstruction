@@ -18,5 +18,3 @@ scipy>=1.11.0
 # Optional: Visualization
 matplotlib>=3.7.0
 
-# Optional: YOLO (if using hybrid approaches)
-ultralytics>=8.3.0
