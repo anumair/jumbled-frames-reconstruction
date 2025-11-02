@@ -8,7 +8,7 @@ from PIL import Image
 from tqdm import tqdm
 
 class FastOpticalFlowReconstructor:
-    def __init__(self, frames_dir, output_dir, start_idx=38, save_order=True):
+    def __init__(self, frames_dir, output_dir, start_idx=276, save_order=True):
         self.frames_dir = frames_dir
         self.output_dir = output_dir
         os.makedirs(output_dir, exist_ok=True)

@@ -1,0 +1,29 @@
+✅ V1 UPDATED - Frame 276 as Starting Point
+
+Summary of Changes:
+-------------------
+
+1. **3_order_frames_smart.py**
+   - Smart starting point detection identified frame 276 as optimal
+   - Scores: Frame 276 (score=213.43, chain=81)
+   - Generated frame_order_initial.txt starting with frame 276
+
+2. **4_refine_ordering.py**
+   - Added 'lock_first_frame' parameter to refine_with_2opt()
+   - Added 'lock_first_frame' parameter to refine_with_sliding_window()
+   - Both methods now preserve the starting frame (276) throughout refinement
+   - Verification shows: Original first frame: 276, Final first frame: 276 ✅
+
+3. **5_reconstruct_video.py**
+   - Updated paths to work from v1 directory
+   - Output video: reconstructed_resnet_tf_refined_v1.mp4
+
+Results:
+--------
+- Initial frame order: Starts with frame 276 ✅
+- Refined frame order: Starts with frame 276 ✅  
+- Video reconstruction: First frame is 276 ✅
+
+The smart starting point detection (using edge detection, similarity analysis, 
+and optical flow validation) correctly identified frame 276 as the optimal 
+starting point, and the refinement process now preserves this choice.

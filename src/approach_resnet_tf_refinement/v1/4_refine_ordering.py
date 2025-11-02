@@ -13,7 +13,7 @@ def two_opt_swap(frame_order, i, k):
     new_order = frame_order[:i] + frame_order[i:k+1][::-1] + frame_order[k+1:]
     return new_order
 
-def refine_with_2opt(frame_order, similarity_matrix, max_iterations=100):
+def refine_with_2opt(frame_order, similarity_matrix, max_iterations=100, lock_first_frame=True):
     """
     Refine frame ordering using 2-opt local search.
     This swaps segments to find local improvements.
@@ -22,6 +22,7 @@ def refine_with_2opt(frame_order, similarity_matrix, max_iterations=100):
         frame_order: Initial frame order
         similarity_matrix: Similarity matrix
         max_iterations: Maximum number of iterations
+        lock_first_frame: If True, keeps the first frame fixed
     
     Returns:
         Refined frame order
@@ -31,16 +32,19 @@ def refine_with_2opt(frame_order, similarity_matrix, max_iterations=100):
     current_cost = calculate_path_cost(current_order, similarity_matrix)
     
     print(f"Initial path cost (total similarity): {current_cost:.4f}")
-    print("Refining with 2-opt algorithm...")
+    print(f"Refining with 2-opt algorithm (first frame locked: {lock_first_frame})...")
     
     improved = True
     iteration = 0
+    
+    # If locking first frame, start from index 1 instead of 0
+    start_idx = 1 if lock_first_frame else 0
     
     while improved and iteration < max_iterations:
         improved = False
         iteration += 1
         
-        for i in range(1, n_frames - 2):
+        for i in range(start_idx + 1, n_frames - 2):
             for k in range(i + 1, n_frames - 1):
                 # Try 2-opt swap
                 new_order = two_opt_swap(current_order, i, k)
@@ -60,9 +64,12 @@ def refine_with_2opt(frame_order, similarity_matrix, max_iterations=100):
     print(f"Final path cost: {current_cost:.4f}")
     print(f"Improvement: {current_cost - calculate_path_cost(frame_order, similarity_matrix):.4f}")
     
+    if lock_first_frame:
+        print(f"✅ First frame {current_order[0]} kept locked throughout refinement")
+    
     return current_order
 
-def refine_with_sliding_window(frame_order, similarity_matrix, window_size=5):
+def refine_with_sliding_window(frame_order, similarity_matrix, window_size=5, lock_first_frame=True):
     """
     Refine ordering using sliding window local optimization.
     For each window, try all permutations to find the best local order.
@@ -71,6 +78,7 @@ def refine_with_sliding_window(frame_order, similarity_matrix, window_size=5):
         frame_order: Initial frame order
         similarity_matrix: Similarity matrix
         window_size: Size of sliding window
+        lock_first_frame: If True, keeps the first frame fixed
     
     Returns:
         Refined frame order
@@ -80,9 +88,12 @@ def refine_with_sliding_window(frame_order, similarity_matrix, window_size=5):
     n_frames = len(frame_order)
     current_order = frame_order.copy()
     
-    print(f"Refining with sliding window (window_size={window_size})...")
+    print(f"Refining with sliding window (window_size={window_size}, lock_first_frame={lock_first_frame})...")
     
-    for start_idx in tqdm(range(n_frames - window_size + 1), desc="Sliding window"):
+    # If locking first frame, start from index 1
+    start_range = 1 if lock_first_frame else 0
+    
+    for start_idx in tqdm(range(start_range, n_frames - window_size + 1), desc="Sliding window"):
         window = current_order[start_idx:start_idx + window_size]
         
         # Try all permutations of the window
@@ -102,6 +113,9 @@ def refine_with_sliding_window(frame_order, similarity_matrix, window_size=5):
         # Update the order with best window
         current_order[start_idx:start_idx + window_size] = best_window
     
+    if lock_first_frame:
+        print(f"✅ First frame {current_order[0]} kept locked throughout refinement")
+    
     return current_order
 
 def save_frame_order(frame_order, output_file):
@@ -113,24 +127,32 @@ def save_frame_order(frame_order, output_file):
 
 if __name__ == "__main__":
     # Load initial frame order
-    initial_order_file = "src/approach_resnet_tf_refinement/frame_order_initial.txt"
-    similarity_file = "src/approach_resnet_tf_refinement/similarity_matrix.npy"
-    output_file = "src/approach_resnet_tf_refinement/frame_order_refined.txt"
+    initial_order_file = "frame_order_initial.txt"
+    similarity_file = "similarity_matrix.npy"
+    output_file = "frame_order_refined.txt"
     
     print("Loading initial frame order...")
     with open(initial_order_file, 'r') as f:
         frame_order = [int(line.strip()) for line in f.readlines()]
     
+    print(f"Initial frame order starts with frame: {frame_order[0]}")
+    
     print("Loading similarity matrix...")
     similarity_matrix = np.load(similarity_file)
     
-    # Method 1: 2-opt refinement
-    print("\n=== Method 1: 2-opt Refinement ===")
-    refined_order_2opt = refine_with_2opt(frame_order, similarity_matrix, max_iterations=50)
+    # Method 1: 2-opt refinement (with first frame locked)
+    print("\n=== Method 1: 2-opt Refinement (First Frame Locked) ===")
+    refined_order_2opt = refine_with_2opt(frame_order, similarity_matrix, max_iterations=50, lock_first_frame=True)
     
-    # Method 2: Sliding window (use smaller window for speed)
-    print("\n=== Method 2: Sliding Window Refinement ===")
-    refined_order_window = refine_with_sliding_window(refined_order_2opt, similarity_matrix, window_size=4)
+    # Method 2: Sliding window (with first frame locked)
+    print("\n=== Method 2: Sliding Window Refinement (First Frame Locked) ===")
+    refined_order_window = refine_with_sliding_window(refined_order_2opt, similarity_matrix, window_size=4, lock_first_frame=True)
+    
+    # Verify first frame hasn't changed
+    print(f"\n🔍 Verification:")
+    print(f"   Original first frame: {frame_order[0]}")
+    print(f"   Final first frame: {refined_order_window[0]}")
+    print(f"   Match: {'✅ YES' if frame_order[0] == refined_order_window[0] else '❌ NO'}")
     
     # Save the final refined order
     save_frame_order(refined_order_window, output_file)

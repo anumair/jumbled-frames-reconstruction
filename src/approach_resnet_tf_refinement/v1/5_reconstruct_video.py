@@ -42,11 +42,12 @@ def reconstruct_video(frames_dir, frame_order_file, output_video, fps=30):
     print(f"✅ Video saved to '{output_video}'")
 
 if __name__ == "__main__":
-    frames_dir = "frames"
-    frame_order_file = "src/approach_resnet_tf_refinement/frame_order_refined.txt"
-    output_video = "output/reconstructed_resnet_tf_refined.mp4"
+    frames_dir = "../../../frames"
+    frame_order_file = "frame_order_refined.txt"
+    output_video = "../../../output/reconstructed_resnet_tf_refined_v1.mp4"
     
     # Create output directory if it doesn't exist
-    os.makedirs("output", exist_ok=True)
+    import os
+    os.makedirs("../../../output", exist_ok=True)
     
     reconstruct_video(frames_dir, frame_order_file, output_video)
