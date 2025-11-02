@@ -14,7 +14,6 @@ jumbled-frames-reconstruction/
 ├── src/                    # Source code
 ├── input/                  # Input jumbled video
 ├── output/                 # Reconstructed video output
-├── docs/                   # Algorithm explanation and documentation
 ├── README.md              # This file
 ├── requirements.txt       # Python dependencies
 └── .gitignore            # Git ignore file
@@ -71,6 +70,8 @@ This will automatically:
 6. Create final unjumbled video (V3)
 
 **Output:** `output/unjumbled_video.mp4` (the final reconstructed video)
+
+📹 **[View Final Unjumbled Video](https://drive.google.com/file/d/1la381SRz4EV6u6AKdw1twP6Ox8G5Bvet/view?usp=sharing)**
 
 ---
 
@@ -225,9 +226,6 @@ python reconstruct_video.py
 ## Documentation Structure
 
 ```
-docs/
-└── algorithm_explanation.md    # Detailed algorithm documentation
-
 src/approach_resnet_tf_refinement/
 ├── v1/                         # V1: ResNet-50 + 2-opt + Sliding Window
 │   ├── 1_extract_resnet_features.py
