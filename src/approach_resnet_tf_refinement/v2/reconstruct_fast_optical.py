@@ -57,7 +57,7 @@ class FastOpticalFlowReconstructor:
         visited[start_idx] = True
         current = start_idx
 
-        print(f"\nStarting from frame {start_idx} (same as v1)")
+        print(f"\nStarting from frame {start_idx}")
         print("Ordering frames using greedy algorithm...")
 
         # Precompute norms to avoid division by zero
@@ -139,7 +139,7 @@ class FastOpticalFlowReconstructor:
         return frame_order
 
     def verify_direction(self, frame_paths, frame_order):
-        """Verify the walk direction is correct using more samples"""
+        """Verify the walk direction is correct and REVERSE if needed (FIXED VERSION)"""
         print("\n🔍 Verifying walk direction...")
 
         n = len(frame_order)
@@ -182,19 +182,27 @@ class FastOpticalFlowReconstructor:
             return frame_order
 
         avg_horizontal_flow = float(np.mean(horizontal_flows))
-        print(f"Average horizontal flow (verification samples): {avg_horizontal_flow:.4f}")
+        median_flow = float(np.median(horizontal_flows))
+        
+        print(f"Average horizontal flow: {avg_horizontal_flow:.4f}")
+        print(f"Median horizontal flow: {median_flow:.4f}")
 
-        if avg_horizontal_flow > 0:
-            print("✅ Direction verified - person walking forward")
+        # FIX: Actually reverse if moving backward!
+        # Use median for robustness
+        if median_flow < -0.3:  # Threshold for backward motion
+            print("⚠️ Person walking BACKWARD detected!")
+            print("🔄 REVERSING entire frame order...")
+            frame_order = frame_order[::-1]
+            print("✅ Frame order reversed - person should now walk forward")
         else:
-            print("⚠️ Warning: Person may still be walking backward")
+            print("✅ Direction verified - person walking forward")
 
         return frame_order
 
     def reconstruct(self, save_order_path=None):
         """Main reconstruction method"""
         print("=" * 60)
-        print("FAST OPTICAL FLOW RECONSTRUCTION (V2)")
+        print("FAST OPTICAL FLOW RECONSTRUCTION (V2 - FIXED)")
         print("=" * 60)
 
         # Get all frame paths
@@ -213,13 +221,13 @@ class FastOpticalFlowReconstructor:
             features.append(feat)
         features = np.array(features)
 
-        # Order frames (using v1's starting point)
+        # Order frames (using specified starting point)
         frame_order = self.greedy_order_frames(features, frame_paths, start_idx=self.start_idx)
 
         # Refine with optical flow check
         frame_order = self.refine_order_with_optical_flow(frame_paths, frame_order)
 
-        # Final verification
+        # Final verification (NOW ACTUALLY REVERSES IF NEEDED!)
         frame_order = self.verify_direction(frame_paths, frame_order)
 
         # Copy frames in reconstructed order
@@ -246,6 +254,7 @@ class FastOpticalFlowReconstructor:
 
         print(f"\n✅ Reconstruction complete!")
         print(f"📂 Output: {self.output_dir}")
+        print(f"🎬 Video length: {len(frame_order)} frames = {len(frame_order)/30:.2f} seconds")
         return frame_order
 
 
@@ -255,9 +264,10 @@ def main():
     project_root = os.path.dirname(os.path.dirname(os.path.dirname(script_dir)))
 
     frames_dir = os.path.join(project_root, "frames")
-    output_dir = os.path.join(project_root, "output", "reconstructed_frames_optical_flow_v2")
+    output_dir = os.path.join(project_root, "output", "reconstructed_frames_v2_fixed_direction")
 
-    reconstructor = FastOpticalFlowReconstructor(frames_dir, output_dir)
+    # Change start_idx if needed (276 is your current value)
+    reconstructor = FastOpticalFlowReconstructor(frames_dir, output_dir, start_idx=276)
     reconstructor.reconstruct()
 
 
