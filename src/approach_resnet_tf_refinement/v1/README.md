@@ -169,14 +169,19 @@ pip install torch torchvision opencv-python numpy scikit-learn tqdm pillow
   - Refinement: ~30-120 seconds (depends on iterations)
   - Total: ~2-3 minutes
 
+## Known Limitations
+
+- **Motion Direction**: The reconstructed video may show the subject moving backwards. This is due to the temporal ordering algorithm which optimizes for visual similarity but does not account for motion direction.
+
 ## Future Enhancements
 
 1. Add simulated annealing for global optimization
 2. Implement genetic algorithm for population-based search
-3. Use optical flow to validate temporal consistency
+3. Use optical flow to validate temporal consistency and motion direction
 4. Add beam search for initial ordering (instead of greedy)
 5. Parallel processing for sliding window optimization
 6. Adaptive window size based on local similarity
+7. Implement motion direction detection to ensure forward temporal flow
 
 ## References
 
